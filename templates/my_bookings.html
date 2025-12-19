@@ -5,34 +5,21 @@
 {% if bookings %}
     {% for booking in bookings %}
     <div class="ride-card">
-        <h3 style="color: #667eea; margin-bottom: 1rem;">Ride by {{ booking.ride.creator.name }}</h3>
+        <h3>Ride by {{ booking.ride.creator.name }}</h3>
         <div class="ride-info">
             <div class="info-item">
-                <span class="info-label">Departure Time</span>
-                <span class="info-value">{{ booking.ride.departure_time.strftime('%d %b %Y, %I:%M %p') }}</span>
+                <span class="info-label">Departure</span>
+                <span class="info-value">{{ booking.ride.departure_time.strftime('%d %b, %I:%M %p') }}</span>
             </div>
             <div class="info-item">
-                <span class="info-label">Your Seats</span>
+                <span class="info-label">Seats Booked</span>
                 <span class="info-value">{{ booking.seats_booked }}</span>
             </div>
-            <div class="info-item">
-                <span class="info-label">Total Cost</span>
-                <span class="info-value">₹{{ booking.ride.cost_per_person * booking.seats_booked }}</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Meeting Point</span>
-                <span class="info-value">{{ booking.ride.meeting_point }}</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Drop Point</span>
-                <span class="info-value">{{ booking.ride.drop_point }}</span>
-            </div>
         </div>
-        <p style="color: #666; margin: 1rem 0;"><strong>Contact:</strong> {{ booking.ride.creator.phone }}</p>
         <a href="{{ url_for('ride_details', ride_id=booking.ride.id) }}" class="btn">View Details</a>
     </div>
     {% endfor %}
 {% else %}
-    <p style="text-align: center; padding: 3rem; color: #666;">You haven't booked any rides yet.</p>
+    <p>No bookings found.</p>
 {% endif %}
 {% endblock %}

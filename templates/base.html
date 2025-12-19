@@ -5,21 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}VIT Cab Share{% endblock %}</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #060606 0%, #4a4a4a 100%);
+            background: linear-gradient(135deg, #0b0b0b 0%, #3d3d3d 100%);
             min-height: 100vh;
             padding: 20px;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+        .container { max-width: 1200px; margin: 0 auto; }
         nav {
             background: white;
             padding: 1rem 2rem;
@@ -29,121 +22,84 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
-        nav h1 {
-            color: #ed1f1f;
-            font-size: 1.5rem;
-        }
-        nav ul {
-            list-style: none;
-            display: flex;
-            gap: 1.5rem;
-        }
+        nav h1 { color: #d53714; font-size: 1.5rem; }
+        nav ul { list-style: none; display: flex; gap: 1.5rem; flex-wrap: wrap; }
         nav a {
             color: #333;
             text-decoration: none;
             font-weight: 500;
-            transition: color 0.3s;
+            transition: all 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
         }
-        nav a:hover {
-            color: #e21515;
-        }
+        nav a:hover { color: #d53714; background: #f0f0f0; }
         .content {
             background: white;
             padding: 2rem;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        .flash-messages {
-            margin-bottom: 1rem;
-        }
+        .flash-messages { margin-bottom: 1rem; }
         .flash {
-            padding: 1rem;
-            border-radius: 5px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
             margin-bottom: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        .flash.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .flash.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
+        .flash.success { background: #d4edda; color: #155724; border-left: 4px solid #28a745; }
+        .flash.error { background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545; }
+        .flash.success::before { content: "✓"; font-weight: bold; }
+        .flash.error::before { content: "✕"; font-weight: bold; }
         .btn {
             display: inline-block;
             padding: 0.75rem 1.5rem;
-            background: #c91f19;
+            background: #d53714;
             color: white;
             text-decoration: none;
-            border-radius: 5px;
+            border-radius: 6px;
             border: none;
             cursor: pointer;
             font-size: 1rem;
-            transition: background 0.3s;
+            font-weight: 600;
+            transition: all 0.3s;
         }
-        .btn:hover {
-            background: #cf1d13;
-        }
-        .btn-secondary {
-            background: #6c757d;
-        }
-        .btn-secondary:hover {
-            background: #5a6268;
-        }
-        form {
-            max-width: 500px;
-        }
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: #333;
-        }
+        .btn:hover { background:  #d53714; transform: translateY(-1px); }
+        .btn-secondary { background: #6c757d; }
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
         input, select, textarea {
             width: 100%;
             padding: 0.75rem;
             border: 1px solid #ddd;
             border-radius: 5px;
-            font-size: 1rem;
-        }
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #d8201a;
         }
         .ride-card {
-            border: 1px solid #ddd;
+            border: 1px solid #e0e0e0;
             padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            transition: box-shadow 0.3s;
-        }
-        .ride-card:hover {
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            background: #fafafa;
         }
         .ride-info {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin: 1rem 0;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.2rem;
+            margin: 1.2rem 0;
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
         }
-        .info-item {
-            display: flex;
-            flex-direction: column;
-        }
-        .info-label {
-            font-size: 0.85rem;
-            color: #666;
-            margin-bottom: 0.25rem;
-        }
-        .info-value {
-            font-weight: 600;
-            color: #333;
+        .info-label { font-size: 0.8rem; color: #888; text-transform: uppercase; }
+        .info-value { font-weight: 600; color: #333; }
+        @media (max-width: 768px) {
+            nav { flex-direction: column; text-align: center; }
+            nav ul { justify-content: center; }
         }
     </style>
 </head>

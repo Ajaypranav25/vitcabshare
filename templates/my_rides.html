@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}My Rides - VIT Cab Share{% endblock %}
+{% block content %}
+<h2 style="margin-bottom: 2rem;">My Created Rides</h2>
+{% if rides %}
+    {% for ride in rides %}
+    <div class="ride-card">
+        <div class="ride-info">
+            <div class="info-item">
+                <span class="info-label">Departure Time</span>
+                <span class="info-value">{{ ride.departure_time.strftime('%d %b %Y, %I:%M %p') }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Available Seats</span>
+                <span class="info-value">{{ ride.available_seats }} / {{ ride.total_seats }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Cost per Person</span>
+                <span class="info-value">₹{{ ride.cost_per_person }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Drop Point</span>
+                <span class="info-value">{{ ride.drop_point }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Bookings</span>
+                <span class="info-value">{{ ride.bookings|length }}</span>
+            </div>
+        </div>
+        <a href="{{ url_for('ride_details', ride_id=ride.id) }}" class="btn">View Details</a>
+    </div>
+    {% endfor %}
+{% else %}
+    <p style="text-align: center; padding: 3rem; color: #666;">You haven't created any rides yet.</p>
+{% endif %}
+{% endblock %}

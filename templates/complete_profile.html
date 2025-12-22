@@ -9,12 +9,12 @@
     <form method="POST">
         <div class="form-group">
             <label for="phone">Phone Number</label>
-            <input type="tel" id="phone" name="phone" placeholder="+91 XXXXXXXXXX" required>
+            <input type="tel" id="phone" name="phone" placeholder="+91 XXXXXXXXXX" value="{{ user.phone or '' }}" required>
             <small style="color: #666; display: block; margin-top: 0.5rem;">
                 This will be shared with other users when you create or book rides
             </small>
         </div>
-        <button type="submit" class="btn" style="width: 100%;">Complete Profile</button>
+        <button type="submit" class="btn" style="width: 100%;">Save Phone Number</button>
     </form>
 </div>
 {% endblock %}

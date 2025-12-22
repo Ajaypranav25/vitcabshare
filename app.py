@@ -67,7 +67,11 @@ class Booking(db.Model):
 def index():
     if 'user_id' in session:
         rides = Ride.query.filter(Ride.departure_time > datetime.now(), Ride.available_seats > 0).order_by(Ride.departure_time).all()
-        return render_template('dashboard.html', rides=rides)
+        
+        # Get user's bookings to check which rides they've already booked
+        user_bookings = {booking.ride_id for booking in Booking.query.filter_by(user_id=session['user_id']).all()}
+        
+        return render_template('dashboard.html', rides=rides, user_bookings=user_bookings)
     return render_template('index.html')
 
 @app.route('/login')
@@ -118,18 +122,42 @@ def complete_profile():
     
     user = User.query.get(session['user_id'])
     
-    # If phone already exists, redirect to dashboard
-    if user.phone:
-        return redirect(url_for('index'))
+    # If user not found, clear session and redirect to login
+    if not user:
+        session.clear()
+        flash('Session expired. Please login again.', 'error')
+        return redirect(url_for('login'))
     
     if request.method == 'POST':
         phone = request.form['phone']
         user.phone = phone
         db.session.commit()
-        flash('Profile completed successfully!', 'success')
+        flash('Profile updated successfully!', 'success')
         return redirect(url_for('index'))
     
     return render_template('complete_profile.html', user=user)
+
+@app.route('/edit_profile', methods=['GET', 'POST'])
+def edit_profile():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    user = User.query.get(session['user_id'])
+    
+    # If user not found, clear session and redirect to login
+    if not user:
+        session.clear()
+        flash('Session expired. Please login again.', 'error')
+        return redirect(url_for('login'))
+    
+    if request.method == 'POST':
+        phone = request.form['phone']
+        user.phone = phone
+        db.session.commit()
+        flash('Phone number updated successfully!', 'success')
+        return redirect(url_for('index'))
+    
+    return render_template('edit_profile.html', user=user)
 
 @app.route('/logout')
 def logout():
@@ -143,6 +171,12 @@ def create_ride():
         return redirect(url_for('login'))
     
     user = User.query.get(session['user_id'])
+    
+    # If user not found, clear session and redirect to login
+    if not user:
+        session.clear()
+        flash('Session expired. Please login again.', 'error')
+        return redirect(url_for('login'))
     
     # Check if user has completed profile
     if not user.phone:
@@ -182,17 +216,31 @@ def book_ride(ride_id):
     
     user = User.query.get(session['user_id'])
     
+    # If user not found, clear session and redirect to login
+    if not user:
+        session.clear()
+        flash('Session expired. Please login again.', 'error')
+        return redirect(url_for('login'))
+    
     # Check if user has completed profile
     if not user.phone:
         flash('Please complete your profile before booking a ride', 'error')
         return redirect(url_for('complete_profile'))
 
     ride = Ride.query.get_or_404(ride_id)
-    seats_requested = int(request.form['seats'])
 
     if ride.user_id == session['user_id']:
         flash('You cannot book your own ride', 'error')
         return redirect(url_for('index'))
+
+    # Check if user has already booked this ride
+    existing_booking = Booking.query.filter_by(ride_id=ride_id, user_id=session['user_id']).first()
+    if existing_booking:
+        flash('You have already booked this ride', 'error')
+        return redirect(url_for('index'))
+
+    # Only allow 1 seat per person
+    seats_requested = 1
 
     if seats_requested > ride.available_seats:
         flash('Not enough seats available', 'error')
@@ -208,8 +256,31 @@ def book_ride(ride_id):
     db.session.add(booking)
     db.session.commit()
 
-    flash(f'Successfully booked {seats_requested} seat(s)!', 'success')
+    flash(f'Successfully booked {seats_requested} seat!', 'success')
     return redirect(url_for('my_bookings'))
+
+@app.route('/cancel_booking/<int:ride_id>', methods=['POST'])
+def cancel_booking(ride_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    booking = Booking.query.filter_by(ride_id=ride_id, user_id=session['user_id']).first()
+    
+    if not booking:
+        flash('Booking not found', 'error')
+        return redirect(url_for('index'))
+    
+    ride = Ride.query.get(ride_id)
+    
+    # Return the seat to available seats
+    ride.available_seats += booking.seats_booked
+    
+    # Delete the booking
+    db.session.delete(booking)
+    db.session.commit()
+    
+    flash('Booking cancelled successfully', 'success')
+    return redirect(url_for('index'))
 
 @app.route('/my_rides')
 def my_rides():
@@ -234,8 +305,22 @@ def ride_details(ride_id):
 
     ride = Ride.query.get_or_404(ride_id)
     bookings = Booking.query.filter_by(ride_id=ride_id).all()
-    return render_template('ride_details.html', ride=ride, bookings=bookings)
+    
+    # Check if current user has booked this ride
+    user_booking = Booking.query.filter_by(ride_id=ride_id, user_id=session['user_id']).first()
+    
+    return render_template('ride_details.html', ride=ride, bookings=bookings, user_booking=user_booking)
 
+@app.route('/reset_db')
+def reset_db():
+    try:
+        # 1. Drop all tables defined in the models
+        db.drop_all()
+        # 2. Recreate all tables
+        db.create_all()
+        return "Database tables cleared and recreated successfully!"
+    except Exception as e:
+        return f"An error occurred during reset: {e}"
 
 # Initialize database
 with app.app_context():

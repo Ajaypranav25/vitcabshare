@@ -3,36 +3,27 @@
 {% block content %}
 <h2 style="margin-bottom: 2rem;">Ride Details</h2>
 <div class="ride-card">
-    <h3 style="color: #667eea; margin-bottom: 1rem;">Created by {{ ride.creator.name }}</h3>
+    <h3 style="color: #667eea;">Created by {{ ride.creator.name }}</h3>
+    <p><strong>Contact:</strong> {{ ride.creator.phone }}</p>
     <div class="ride-info">
         <div class="info-item">
             <span class="info-label">Time</span>
             <span class="info-value">{{ ride.departure_time.strftime('%d %b %Y, %I:%M %p') }}</span>
         </div>
         <div class="info-item">
-            <span class="info-label">Meeting Point</span>
+            <span class="info-label">Point</span>
             <span class="info-value">{{ ride.meeting_point }}</span>
         </div>
-        <div class="info-item">
-            <span class="info-label">Cost</span>
-            <span class="info-value">₹{{ ride.cost_per_person }}</span>
-        </div>
     </div>
-    <p style="color: #666; margin-bottom: 1rem;"><strong>Contact Host:</strong> {{ ride.creator.phone }}</p>
 </div>
 
-<h3 style="margin: 2rem 0 1rem;">Bookings ({{ bookings|length }})</h3>
-{% if bookings %}
-    {% for booking in bookings %}
-    <div class="ride-card" style="background: white;">
-        <p><strong>{{ booking.user.name }}</strong> - {{ booking.seats_booked }} seat(s)</p>
-        <p style="color: #666; font-size: 0.9rem;">Booked on: {{ booking.booked_at.strftime('%d %b, %I:%M %p') }}</p>
-        {% if ride.user_id == session.user_id %}
-            <p style="color: #666;">Contact Co-passenger: {{ booking.user.phone }}</p>
-        {% endif %}
-    </div>
-    {% endfor %}
-{% else %}
-    <p style="color: #666;">No bookings yet.</p>
-{% endif %}
+<h3>Bookings ({{ bookings|length }})</h3>
+{% for booking in bookings %}
+<div class="ride-card" style="background: white;">
+    <p><strong>{{ booking.user.name }}</strong></p>
+    {% if ride.user_id == session.user_id %}
+    <p>Contact: {{ booking.user.phone }}</p>
+    {% endif %}
+</div>
+{% endfor %}
 {% endblock %}

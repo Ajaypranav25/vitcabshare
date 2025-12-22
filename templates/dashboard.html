@@ -9,7 +9,8 @@
 {% if rides %}
     {% for ride in rides %}
     <div class="ride-card">
-        <h3>Ride by {{ ride.creator.name }}</h3>
+        <h3 style="color: #667eea; margin-bottom: 1rem;">Ride by {{ ride.creator.name }}</h3>
+        
         <div class="ride-info">
             <div class="info-item">
                 <span class="info-label">Departure Time</span>
@@ -32,13 +33,38 @@
                 <span class="info-value">{{ ride.drop_point }}</span>
             </div>
         </div>
-        {% if ride.user_id != session.user_id %}
-        <form method="POST" action="{{ url_for('book_ride', ride_id=ride.id) }}" style="display: inline-block;">
-            <input type="number" name="seats" min="1" max="{{ ride.available_seats }}" value="1" style="width: 80px; display: inline-block; margin-right: 0.5rem;">
-            <button type="submit" class="btn">Book Seats</button>
-        </form>
+
+        {% if ride.notes %}
+        <p style="color: #666; margin: 1rem 0;"><strong>Notes:</strong> {{ ride.notes }}</p>
         {% endif %}
-        <a href="{{ url_for('ride_details', ride_id=ride.id) }}" class="btn btn-secondary">View Details</a>
+
+        <p style="color: #666; margin-bottom: 1.5rem;"><strong>Contact:</strong> {{ ride.creator.phone }}</p>
+        
+        <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+            {% if ride.user_id != session.user_id %}
+                {% if ride.id in user_bookings %}
+                    <form method="POST" action="{{ url_for('cancel_booking', ride_id=ride.id) }}" style="margin: 0;" onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+                        <button type="submit" class="btn" style="background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; box-shadow: none;">
+                            Cancel Booking
+                        </button>
+                    </form>
+                {% elif ride.available_seats > 0 %}
+                    <form method="POST" action="{{ url_for('book_ride', ride_id=ride.id) }}" style="margin: 0;">
+                        <button type="submit" class="btn">Book 1 Seat</button>
+                    </form>
+                {% else %}
+                    <button class="btn" disabled style="background: #fee2e2; color: #b91c1c; cursor: not-allowed; box-shadow: none;">
+                        Ride Full
+                    </button>
+                {% endif %}
+            {% else %}
+                <span style="background: #ebf4ff; color: #2b6cb0; padding: 0.5rem 1rem; border-radius: 6px; font-weight: 600; font-size: 0.9rem;">
+                    Your Ride
+                </span>
+            {% endif %}
+
+            <a href="{{ url_for('ride_details', ride_id=ride.id) }}" class="btn btn-secondary">View Details</a>
+        </div>
     </div>
     {% endfor %}
 {% else %}

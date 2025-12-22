@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile - VIT Cab Share{% endblock %}
+{% block content %}
+<div style="max-width: 500px; margin: 0 auto;">
+    <h2 style="margin-bottom: 2rem; text-align: center;">Edit Profile</h2>
+    <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+        <p><strong>Name:</strong> {{ user.name }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+    </div>
+    <form method="POST">
+        <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" value="{{ user.phone or '' }}" required>
+        </div>
+        <button type="submit" class="btn" style="width: 100%;">Update Phone Number</button>
+    </form>
+</div>
+{% endblock %}

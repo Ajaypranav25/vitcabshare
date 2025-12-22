@@ -15,6 +15,11 @@
             <span class="info-value">{{ ride.meeting_point }}</span>
         </div>
     </div>
+    {% if ride.notes %}
+    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #eee;">
+        <p><strong>Notes:</strong> {{ ride.notes }}</p>
+    </div>
+    {% endif %}
 </div>
 
 <h3>Bookings ({{ bookings|length }})</h3>

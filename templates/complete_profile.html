@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Complete Profile - VIT Cab Share{% endblock %}
+{% block content %}
+<div style="max-width: 500px; margin: 0 auto;">
+    <h2 style="margin-bottom: 1rem; text-align: center;">Complete Your Profile</h2>
+    <p style="text-align: center; color: #666; margin-bottom: 2rem;">
+        Welcome, {{ user.name }}! Please add your phone number to continue.
+    </p>
+    <form method="POST">
+        <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" placeholder="+91 XXXXXXXXXX" required>
+            <small style="color: #666; display: block; margin-top: 0.5rem;">
+                This will be shared with other users when you create or book rides
+            </small>
+        </div>
+        <button type="submit" class="btn" style="width: 100%;">Complete Profile</button>
+    </form>
+</div>
+{% endblock %}

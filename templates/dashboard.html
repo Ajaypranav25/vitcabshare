@@ -38,7 +38,7 @@
             <button type="submit" class="btn">Book Seats</button>
         </form>
         {% endif %}
-        <a href="{{ url_for('ride_details', ride_id=ride.id) }}" class="btn btn-secondary">Details</a>
+        <a href="{{ url_for('ride_details', ride_id=ride.id) }}" class="btn btn-secondary">View Details</a>
     </div>
     {% endfor %}
 {% else %}

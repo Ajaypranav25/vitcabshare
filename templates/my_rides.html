@@ -11,18 +11,18 @@
                 <span class="info-value">{{ ride.departure_time.strftime('%d %b, %I:%M %p') }}</span>
             </div>
             <div class="info-item">
-                <span class="info-label">Seats</span>
+                <span class="info-label">Available Seats</span>
                 <span class="info-value">{{ ride.available_seats }} / {{ ride.total_seats }}</span>
             </div>
             <div class="info-item">
-                <span class="info-label">Drop</span>
+                <span class="info-label">Drop Point</span>
                 <span class="info-value">{{ ride.drop_point }}</span>
             </div>
         </div>
-        <a href="{{ url_for('ride_details', ride_id=ride.id) }}" class="btn">Manage Bookings</a>
+        <a href="{{ url_for('ride_details', ride_id=ride.id) }}" class="btn">View Details</a>
     </div>
     {% endfor %}
 {% else %}
-    <p>You haven't created any rides.</p>
+    <p style="text-align: center; padding: 3rem; color: #666;">You haven't created any rides yet.</p>
 {% endif %}
 {% endblock %}

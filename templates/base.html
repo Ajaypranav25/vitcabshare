@@ -8,7 +8,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0b0b0b 0%, #3d3d3d 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -25,8 +25,8 @@
             flex-wrap: wrap;
             gap: 1rem;
         }
-        nav h1 { color: #d53714; font-size: 1.5rem; }
-        nav ul { list-style: none; display: flex; gap: 1.5rem; flex-wrap: wrap; }
+        nav h1 { color: #667eea; font-size: 1.5rem; }
+        nav ul { list-style: none; display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: center; }
         nav a {
             color: #333;
             text-decoration: none;
@@ -35,7 +35,7 @@
             padding: 0.5rem 1rem;
             border-radius: 5px;
         }
-        nav a:hover { color: #d53714; background: #f0f0f0; }
+        nav a:hover { color: #667eea; background: #f0f0f0; }
         .content {
             background: white;
             padding: 2rem;
@@ -59,7 +59,7 @@
         .btn {
             display: inline-block;
             padding: 0.75rem 1.5rem;
-            background: #d53714;
+            background: #667eea;
             color: white;
             text-decoration: none;
             border-radius: 6px;
@@ -69,7 +69,7 @@
             font-weight: 600;
             transition: all 0.3s;
         }
-        .btn:hover { background:  #d53714; transform: translateY(-1px); }
+        .btn:hover { background: #5568d3; transform: translateY(-1px); }
         .btn-secondary { background: #6c757d; }
         .form-group { margin-bottom: 1.5rem; }
         label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
@@ -97,16 +97,12 @@
         }
         .info-label { font-size: 0.8rem; color: #888; text-transform: uppercase; }
         .info-value { font-weight: 600; color: #333; }
-        @media (max-width: 768px) {
-            nav { flex-direction: column; text-align: center; }
-            nav ul { justify-content: center; }
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <nav>
-            <h1>VIT Cab Share</h1>
+            <h1>🚕 VIT Cab Share</h1>
             <ul>
                 {% if session.user_id %}
                     <li><a href="{{ url_for('index') }}">Dashboard</a></li>
@@ -115,8 +111,7 @@
                     <li><a href="{{ url_for('my_bookings') }}">My Bookings</a></li>
                     <li><a href="{{ url_for('logout') }}">Logout ({{ session.user_name }})</a></li>
                 {% else %}
-                    <li><a href="{{ url_for('login') }}">Login</a></li>
-                    <li><a href="{{ url_for('register') }}">Register</a></li>
+                    <li><a href="{{ url_for('login') }}">Login with Google</a></li>
                 {% endif %}
             </ul>
         </nav>

@@ -1,31 +1,46 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import os
+from authlib.integrations.flask_client import OAuth
+from dotenv import load_dotenv
+
+load_dotenv() #
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your-secret-key-change-this'
+# Use os.getenv to pull the keys securely
+app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///vitcabshare.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# Google OAuth Configuration
+app.config['GOOGLE_CLIENT_ID'] = os.getenv('GOOGLE_CLIENT_ID') #
+app.config['GOOGLE_CLIENT_SECRET'] = os.getenv('GOOGLE_CLIENT_SECRET')
+
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
+
 db = SQLAlchemy(app)
+oauth = OAuth(app)
+
+# Configure Google OAuth
+google = oauth.register(
+    name='google',
+    client_id=app.config['GOOGLE_CLIENT_ID'],
+    client_secret=app.config['GOOGLE_CLIENT_SECRET'],
+    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+    client_kwargs={'scope': 'openid email profile'}
+)
 
 # Models
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    phone = db.Column(db.String(15), nullable=False)
-    password_hash = db.Column(db.String(200), nullable=False)
+    phone = db.Column(db.String(15), nullable=True)
+    google_id = db.Column(db.String(100), unique=True, nullable=False)
     rides = db.relationship('Ride', backref='creator', lazy=True)
     bookings = db.relationship('Booking', backref='user', lazy=True)
-
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
 
 class Ride(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -55,44 +70,66 @@ def index():
         return render_template('dashboard.html', rides=rides)
     return render_template('index.html')
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        name = request.form['name']
-        email = request.form['email']
-        phone = request.form['phone']
-        password = request.form['password']
-
-        if User.query.filter_by(email=email).first():
-            flash('Email already registered', 'error')
-            return redirect(url_for('register'))
-
-        user = User(name=name, email=email, phone=phone)
-        user.set_password(password)
-        db.session.add(user)
-        db.session.commit()
-
-        flash('Registration successful! Please login.', 'success')
-        return redirect(url_for('login'))
-
-    return render_template('register.html')
-
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login')
 def login():
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-        user = User.query.filter_by(email=email).first()
+    redirect_uri = url_for('authorize', _external=True)
+    return google.authorize_redirect(redirect_uri)
 
-        if user and user.check_password(password):
-            session['user_id'] = user.id
-            session['user_name'] = user.name
-            flash('Login successful!', 'success')
+@app.route('/authorize')
+def authorize():
+    try:
+        token = google.authorize_access_token()
+        user_info = token.get('userinfo')
+        
+        # Check if email is from VIT
+        if not user_info['email'].endswith('@vitstudent.ac.in'):
+            flash('Please use your VIT student email (@vitstudent.ac.in)', 'error')
             return redirect(url_for('index'))
-        else:
-            flash('Invalid email or password', 'error')
+        
+        # Check if user exists
+        user = User.query.filter_by(email=user_info['email']).first()
+        
+        if not user:
+            # Create new user
+            user = User(
+                name=user_info['name'],
+                email=user_info['email'],
+                google_id=user_info['sub']
+            )
+            db.session.add(user)
+            db.session.commit()
+        
+        # Log in user
+        session['user_id'] = user.id
+        session['user_name'] = user.name
+        session['user_email'] = user.email
+        
+        flash('Login successful!', 'success')
+        return redirect(url_for('index'))
+        
+    except Exception as e:
+        flash('Login failed. Please try again.', 'error')
+        return redirect(url_for('index'))
 
-    return render_template('login.html')
+@app.route('/complete_profile', methods=['GET', 'POST'])
+def complete_profile():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    user = User.query.get(session['user_id'])
+    
+    # If phone already exists, redirect to dashboard
+    if user.phone:
+        return redirect(url_for('index'))
+    
+    if request.method == 'POST':
+        phone = request.form['phone']
+        user.phone = phone
+        db.session.commit()
+        flash('Profile completed successfully!', 'success')
+        return redirect(url_for('index'))
+    
+    return render_template('complete_profile.html', user=user)
 
 @app.route('/logout')
 def logout():
@@ -104,6 +141,13 @@ def logout():
 def create_ride():
     if 'user_id' not in session:
         return redirect(url_for('login'))
+    
+    user = User.query.get(session['user_id'])
+    
+    # Check if user has completed profile
+    if not user.phone:
+        flash('Please complete your profile before creating a ride', 'error')
+        return redirect(url_for('complete_profile'))
 
     if request.method == 'POST':
         departure_time = datetime.strptime(request.form['departure_time'], '%Y-%m-%dT%H:%M')
@@ -135,6 +179,13 @@ def create_ride():
 def book_ride(ride_id):
     if 'user_id' not in session:
         return redirect(url_for('login'))
+    
+    user = User.query.get(session['user_id'])
+    
+    # Check if user has completed profile
+    if not user.phone:
+        flash('Please complete your profile before booking a ride', 'error')
+        return redirect(url_for('complete_profile'))
 
     ride = Ride.query.get_or_404(ride_id)
     seats_requested = int(request.form['seats'])
@@ -185,12 +236,10 @@ def ride_details(ride_id):
     bookings = Booking.query.filter_by(ride_id=ride_id).all()
     return render_template('ride_details.html', ride=ride, bookings=bookings)
 
+
 # Initialize database
 with app.app_context():
     db.create_all()
-
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)

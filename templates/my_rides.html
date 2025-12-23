@@ -19,7 +19,16 @@
                 <span class="info-value">{{ ride.bookings|length }}</span>
             </div>
         </div>
-        <a href="{{ url_for('ride_details', ride_id=ride.id) }}" class="btn">View Details</a>
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <a href="{{ url_for('ride_details', ride_id=ride.id) }}" class="btn">View Details</a>
+            
+            <form action="{{ url_for('delete_ride', ride_id=ride.id) }}" method="POST" style="display: inline;">
+                <button type="submit" class="btn" style="background-color: #dc3545; color: white; border: none;" 
+                        onclick="return confirm('Are you sure you want to delete this ride? This will also cancel all current bookings.')">
+                    Delete Ride
+                </button>
+            </form>
+        </div>
     </div>
     {% endfor %}
 {% else %}

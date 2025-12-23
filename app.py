@@ -311,6 +311,31 @@ def ride_details(ride_id):
     
     return render_template('ride_details.html', ride=ride, bookings=bookings, user_booking=user_booking)
 
+@app.route('/delete_ride/<int:ride_id>', methods=['POST'])
+def delete_ride(ride_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    ride = Ride.query.get_or_404(ride_id)
+
+    # Ensure only the creator can delete the ride
+    if ride.user_id != session['user_id']:
+        flash('You are not authorized to delete this ride', 'error')
+        return redirect(url_for('my_rides'))
+
+    # Optional: prevent deletion if there are existing bookings
+    if ride.bookings:
+        flash('Cannot delete ride with existing bookings', 'error')
+        return redirect(url_for('my_rides'))
+
+    Booking.query.filter_by(ride_id=ride_id).delete()
+
+    db.session.delete(ride)
+    db.session.commit()
+
+    flash('Ride deleted successfully', 'success')
+    return redirect(url_for('my_rides'))
+
 @app.route('/reset_db')
 def reset_db():
     try:

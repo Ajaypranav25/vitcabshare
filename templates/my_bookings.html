@@ -1,11 +1,14 @@
 {% extends "base.html" %}
 {% block title %}My Bookings - VIT Cab Share{% endblock %}
+
 {% block content %}
 <h2 style="margin-bottom: 2rem;">My Bookings</h2>
+
 {% if bookings %}
     {% for booking in bookings %}
     <div class="ride-card">
         <h3 style="color: #667eea; margin-bottom: 1rem;">Ride by {{ booking.ride.creator.name }}</h3>
+        
         <div class="ride-info">
             <div class="info-item">
                 <span class="info-label">Departure Time</span>
@@ -13,7 +16,7 @@
             </div>
             <div class="info-item">
                 <span class="info-label">Your Seat</span>
-                <span class="info-value">1 Seat</span>
+                <span class="info-value">{{ booking.seats_booked }} Seat(s)</span>
             </div>
             <div class="info-item">
                 <span class="info-label">Total Cost</span>
@@ -28,8 +31,20 @@
                 <span class="info-value">{{ booking.ride.drop_point }}</span>
             </div>
         </div>
+
         <p style="color: #666; margin: 1rem 0;"><strong>Contact:</strong> {{ booking.ride.creator.phone }}</p>
-        <a href="{{ url_for('ride_details', ride_id=booking.ride.id) }}" class="btn">View Details</a>
+
+        <div style="display: flex; gap: 1rem; align-items: center;">
+            <a href="{{ url_for('ride_details', ride_id=booking.ride.id) }}" class="btn">View Details</a>
+            
+            <form method="POST" action="{{ url_for('cancel_booking', ride_id=booking.ride.id) }}" 
+                  style="margin: 0;" 
+                  onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+                <button type="submit" class="btn" style="background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; box-shadow: none;">
+                    Cancel Booking
+                </button>
+            </form>
+        </div>
     </div>
     {% endfor %}
 {% else %}

@@ -5,7 +5,7 @@ import os
 from authlib.integrations.flask_client import OAuth
 from dotenv import load_dotenv
 
-load_dotenv() #
+load_dotenv() 
 
 app = Flask(__name__)
 # Use os.getenv to pull the keys securely

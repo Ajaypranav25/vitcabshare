@@ -62,15 +62,15 @@
         nav ul {
             list-style: none;
             display: flex;
-            justify-content: center;
+            justify-content: space-evenly;
             gap: 0;
             max-width: 1200px;
             margin: 0 auto;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
         }
         nav li {
             flex: 1;
-            min-width: 100px;
+            min-width: 0;
         }
         nav a {
             display: block;
@@ -78,14 +78,23 @@
             text-decoration: none;
             font-weight: 500;
             transition: all 0.3s;
-            padding: 1rem;
+            padding: 1rem 0.5rem;
             text-align: center;
             border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            font-size: 0.95rem;
         }
         nav a:hover {
             color: #667eea;
             background: #f8f9ff;
             border-bottom-color: #667eea;
+        }
+        
+        @media (max-width: 768px) {
+            nav a {
+                font-size: 0.85rem;
+                padding: 1rem 0.3rem;
+            }
         }
     </style>
 </head>

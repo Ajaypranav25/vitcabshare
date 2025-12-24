@@ -5,12 +5,12 @@ import os
 from authlib.integrations.flask_client import OAuth
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
-from werkzeug.middleware.proxy_fix import ProxyFix
+
 
 load_dotenv() 
 
 app = Flask(__name__)
-app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+
 
 USER = os.getenv("user")
 PASSWORD = os.getenv("password")
@@ -35,9 +35,13 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['GOOGLE_CLIENT_ID'] = os.getenv('GOOGLE_CLIENT_ID') #
 app.config['GOOGLE_CLIENT_SECRET'] = os.getenv('GOOGLE_CLIENT_SECRET')
 
+if os.getenv('FLASK_ENV') == 'development':
+    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
-os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
+app.config['SESSION_COOKIE_SECURE'] = True 
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
 db = SQLAlchemy(app)
 oauth = OAuth(app)
@@ -95,7 +99,7 @@ def index():
 
 @app.route('/login')
 def login():
-    redirect_uri = url_for('authorize', _external=True)
+    redirect_uri = url_for('authorize', _external=True, _scheme='https')
     return google.authorize_redirect(redirect_uri)
 
 @app.route('/authorize')
@@ -131,7 +135,8 @@ def authorize():
         return redirect(url_for('index'))
         
     except Exception as e:
-        flash('Login failed. Please try again.', 'error')
+        print(f"OAuth Error: {str(e)}")  # Check Vercel logs
+        flash(f'Login failed: {str(e)}', 'error')
         return redirect(url_for('index'))
 
 @app.route('/complete_profile', methods=['GET', 'POST'])

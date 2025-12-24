@@ -34,7 +34,7 @@ app.config['GOOGLE_CLIENT_ID'] = os.getenv('GOOGLE_CLIENT_ID') #
 app.config['GOOGLE_CLIENT_SECRET'] = os.getenv('GOOGLE_CLIENT_SECRET')
 
 
-
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 
 db = SQLAlchemy(app)
@@ -129,7 +129,7 @@ def authorize():
         return redirect(url_for('index'))
         
     except Exception as e:
-        flash(e)
+        flash('Login failed. Please try again.', 'error')
         return redirect(url_for('index'))
 
 @app.route('/complete_profile', methods=['GET', 'POST'])

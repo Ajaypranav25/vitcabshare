@@ -35,13 +35,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['GOOGLE_CLIENT_ID'] = os.getenv('GOOGLE_CLIENT_ID') #
 app.config['GOOGLE_CLIENT_SECRET'] = os.getenv('GOOGLE_CLIENT_SECRET')
 
-if os.getenv('FLASK_ENV') == 'development':
-    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
-
-app.config['SESSION_COOKIE_SECURE'] = True 
-app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
 db = SQLAlchemy(app)
 oauth = OAuth(app)
@@ -135,8 +129,7 @@ def authorize():
         return redirect(url_for('index'))
         
     except Exception as e:
-        print(f"OAuth Error: {str(e)}")  # Check Vercel logs
-        flash(f'Login failed: {str(e)}', 'error')
+        flash('Login failed. Please try again.', 'error')
         return redirect(url_for('index'))
 
 @app.route('/complete_profile', methods=['GET', 'POST'])

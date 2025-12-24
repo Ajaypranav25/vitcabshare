@@ -11,21 +11,15 @@
             background: linear-gradient(135deg, #0f0f0f 0%, #676766 100%);
             min-height: 100vh;
             padding: 20px;
+            padding-bottom: 100px;
         }
         .container { max-width: 1200px; margin: 0 auto; }
-        nav {
-            background: white; padding: 1rem 2rem; border-radius: 10px;
+        header {
+            background: white; padding: 1.5rem 2rem; border-radius: 10px;
             margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            display: flex; justify-content: space-between; align-items: center;
-            flex-wrap: wrap; gap: 1rem;
+            text-align: center;
         }
-        nav h1 { color: #667eea; font-size: 1.5rem; }
-        nav ul { list-style: none; display: flex; gap: 1.5rem; flex-wrap: wrap; }
-        nav a {
-            color: #333; text-decoration: none; font-weight: 500;
-            transition: all 0.3s; padding: 0.5rem 1rem; border-radius: 5px;
-        }
-        nav a:hover { color: #667eea; background: #f0f0f0; }
+        header h1 { color: #667eea; font-size: 1.8rem; }
         .content { background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .flash-messages { margin-bottom: 1rem; }
         .flash {
@@ -54,25 +48,52 @@
         .ride-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.2rem; margin: 1.2rem 0; background: white; padding: 1rem; border-radius: 8px; }
         .info-label { font-size: 0.8rem; color: #888; text-transform: uppercase; }
         .info-value { font-weight: 600; color: #333; }
+        
+        /* Bottom Navigation */
+        nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 -4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+        nav li {
+            flex: 1;
+            min-width: 100px;
+        }
+        nav a {
+            display: block;
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 3px solid transparent;
+        }
+        nav a:hover {
+            color: #667eea;
+            background: #f8f9ff;
+            border-bottom-color: #667eea;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <nav>
-            <h1> VIT Cab Share</h1>
-            <ul>
-                {% if session.user_id %}
-                    <li><a href="{{ url_for('index') }}">Dashboard</a></li>
-                    <li><a href="{{ url_for('create_ride') }}">Create Ride</a></li>
-                    <li><a href="{{ url_for('my_rides') }}">My Rides</a></li>
-                    <li><a href="{{ url_for('my_bookings') }}">My Bookings</a></li>
-                    <li><a href="{{ url_for('edit_profile') }}">Profile</a></li>
-                    
-                {% else %}
-                    <li><a href="{{ url_for('login') }}">Login with Google</a></li>
-                {% endif %}
-            </ul>
-        </nav>
+        <header>
+            <h1>VIT Cab Share</h1>
+        </header>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <div class="flash-messages">
@@ -86,5 +107,19 @@
             {% block content %}{% endblock %}
         </div>
     </div>
+    
+    <nav>
+        <ul>
+            {% if session.user_id %}
+                <li><a href="{{ url_for('index') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('create_ride') }}">Create Ride</a></li>
+                <li><a href="{{ url_for('my_rides') }}">My Rides</a></li>
+                <li><a href="{{ url_for('my_bookings') }}">My Bookings</a></li>
+                <li><a href="{{ url_for('edit_profile') }}">Profile</a></li>
+            {% else %}
+                <li><a href="{{ url_for('login') }}">Login with Google</a></li>
+            {% endif %}
+        </ul>
+    </nav>
 </body>
 </html>

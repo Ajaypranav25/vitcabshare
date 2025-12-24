@@ -6,52 +6,126 @@
     <title>{% block title %}VIT Cab Share{% endblock %}</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #0f0f0f 0%, #676766 100%);
             min-height: 100vh;
             padding: 20px;
         }
+
         .container { max-width: 1200px; margin: 0 auto; }
+
+        /* Updated Navigation Styles */
         nav {
-            background: white; padding: 1rem 2rem; border-radius: 10px;
-            margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            display: flex; justify-content: space-between; align-items: center;
-            flex-wrap: wrap; gap: 1rem;
+            background: white; 
+            padding: 1.5rem 2rem; 
+            border-radius: 10px;
+            margin-bottom: 2rem; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex; 
+            flex-direction: column; /* Stacks Title and Links vertically */
+            align-items: center;    /* Centers items horizontally */
+            gap: 1rem;
         }
-        nav h1 { color: #667eea; font-size: 1.5rem; }
-        nav ul { list-style: none; display: flex; gap: 1.5rem; flex-wrap: wrap; }
+
+        nav h1 { 
+            color: #667eea; 
+            font-size: 1.8rem; 
+            text-align: center;
+        }
+
+        nav ul { 
+            list-style: none; 
+            display: flex; 
+            justify-content: center; /* Centers links in the middle */
+            gap: 1rem; 
+            flex-wrap: wrap; 
+            padding: 0;
+        }
+
         nav a {
-            color: #333; text-decoration: none; font-weight: 500;
-            transition: all 0.3s; padding: 0.5rem 1rem; border-radius: 5px;
+            color: #333; 
+            text-decoration: none; 
+            font-weight: 500;
+            transition: all 0.3s; 
+            padding: 0.5rem 1rem; 
+            border-radius: 5px;
         }
-        nav a:hover { color: #667eea; background: #f0f0f0; }
-        .content { background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+
+        nav a:hover { 
+            color: #667eea; 
+            background: #f0f0f0; 
+        }
+
+        /* Content & UI Components */
+        .content { 
+            background: white; 
+            padding: 2rem; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+        }
+
         .flash-messages { margin-bottom: 1rem; }
+        
         .flash {
-            padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 1rem;
-            font-weight: 500; display: flex; align-items: center; gap: 0.5rem;
+            padding: 1rem 1.5rem; 
+            border-radius: 8px; 
+            margin-bottom: 1rem;
+            font-weight: 500; 
+            display: flex; 
+            align-items: center; 
+            gap: 0.5rem;
         }
+
         .flash.success { background: #d4edda; color: #155724; border-left: 4px solid #28a745; }
         .flash.error { background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545; }
         .flash.success::before { content: "✓"; font-weight: bold; font-size: 1.2rem; }
         .flash.error::before { content: "✕"; font-weight: bold; font-size: 1.2rem; }
+
         .btn {
-            display: inline-block; padding: 0.75rem 1.5rem; background: #667eea;
-            color: white; text-decoration: none; border-radius: 6px; border: none;
-            cursor: pointer; font-size: 1rem; font-weight: 600; transition: all 0.3s;
+            display: inline-block; 
+            padding: 0.75rem 1.5rem; 
+            background: #667eea;
+            color: white; 
+            text-decoration: none; 
+            border-radius: 6px; 
+            border: none;
+            cursor: pointer; 
+            font-size: 1rem; 
+            font-weight: 600; 
+            transition: all 0.3s;
             box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
         }
+
         .btn:hover { background: #5568d3; transform: translateY(-1px); }
         .btn-secondary { background: #6c757d; }
         .btn-danger { background: #dc3545; }
         .btn-danger:hover { background: #c82333; }
+
         form { max-width: 500px; }
         .form-group { margin-bottom: 1.5rem; }
         label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #333; }
         input, select, textarea { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 5px; }
-        .ride-card { border: 1px solid #e0e0e0; padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem; background: #fafafa; }
-        .ride-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.2rem; margin: 1.2rem 0; background: white; padding: 1rem; border-radius: 8px; }
+
+        .ride-card { 
+            border: 1px solid #e0e0e0; 
+            padding: 1.5rem; 
+            border-radius: 10px; 
+            margin-bottom: 1.5rem; 
+            background: #fafafa; 
+        }
+
+        .ride-info { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+            gap: 1.2rem; 
+            margin: 1.2rem 0; 
+            background: white; 
+            padding: 1rem; 
+            border-radius: 8px; 
+        }
+
         .info-label { font-size: 0.8rem; color: #888; text-transform: uppercase; }
         .info-value { font-weight: 600; color: #333; }
     </style>
@@ -59,7 +133,7 @@
 <body>
     <div class="container">
         <nav>
-            <h1> VIT Cab Share</h1>
+            <h1>VIT Cab Share</h1>
             <ul>
                 {% if session.user_id %}
                     <li><a href="{{ url_for('index') }}">Dashboard</a></li>
@@ -67,12 +141,12 @@
                     <li><a href="{{ url_for('my_rides') }}">My Rides</a></li>
                     <li><a href="{{ url_for('my_bookings') }}">My Bookings</a></li>
                     <li><a href="{{ url_for('edit_profile') }}">Profile</a></li>
-                    
                 {% else %}
                     <li><a href="{{ url_for('login') }}">Login with Google</a></li>
                 {% endif %}
             </ul>
         </nav>
+
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <div class="flash-messages">
@@ -82,6 +156,7 @@
                 </div>
             {% endif %}
         {% endwith %}
+
         <div class="content">
             {% block content %}{% endblock %}
         </div>

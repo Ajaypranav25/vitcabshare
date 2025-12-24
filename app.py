@@ -129,7 +129,7 @@ def authorize():
         return redirect(url_for('index'))
         
     except Exception as e:
-        flash('Login failed. Please try again.', 'error')
+        flash(e)
         return redirect(url_for('index'))
 
 @app.route('/complete_profile', methods=['GET', 'POST'])

@@ -5,10 +5,12 @@ import os
 from authlib.integrations.flask_client import OAuth
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 load_dotenv() 
 
 app = Flask(__name__)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 USER = os.getenv("user")
 PASSWORD = os.getenv("password")

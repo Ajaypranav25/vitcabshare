@@ -57,7 +57,8 @@ This application solves that by allowing students to **coordinate cab sharing**,
 - Authlib (Google OAuth)
 
 **Database**
-- SQLite
+- SQLAlchemy
+- supabase
 
 **Frontend**
 - Jinja2 Templates
@@ -66,6 +67,7 @@ This application solves that by allowing students to **coordinate cab sharing**,
 **Other Tools**
 - dotenv for environment variables
 - Werkzeug session handling
+- vercel
 
 ---
 
@@ -120,8 +122,7 @@ This application solves that by allowing students to **coordinate cab sharing**,
 - Ride auto-expiry cleanup
 - Admin moderation panel
 - In-app messaging
-- PostgreSQL support
-- Cloud deployment (Render / Railway)
+
 
 ---
 
